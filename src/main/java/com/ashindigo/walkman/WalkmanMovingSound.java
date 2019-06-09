@@ -10,16 +10,13 @@ public class WalkmanMovingSound extends MovingSound {
     private final EntityPlayer player;
     private float distance = 0.0F;
 
-    public WalkmanMovingSound(EntityPlayer player, SoundEvent event) {
+    WalkmanMovingSound(EntityPlayer player, SoundEvent event) {
         super(event, SoundCategory.RECORDS);
         this.player = player;
         this.repeat = true;
         this.repeatDelay = 0;
     }
 
-    /**
-     * Like the old updateEntity(), except more generic.
-     */
     public void update() {
         if (this.player.isDead) {
             this.donePlaying = true;

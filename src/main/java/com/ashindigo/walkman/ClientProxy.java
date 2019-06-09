@@ -16,6 +16,7 @@ public class ClientProxy extends CommonProxy {
     public void playDisc(String sound2) {
         Minecraft.getMinecraft().addScheduledTask(() -> {
             if (!isPlaying || !mc.getSoundHandler().isSoundPlaying(sound)) {
+                mc.ingameGUI.setRecordPlayingMessage(((ItemRecord) Objects.requireNonNull(Item.getByNameOrId(sound2))).getRecordNameLocal());
                 SoundEvent sound3 = ((ItemRecord) Objects.requireNonNull(Item.getByNameOrId(sound2))).getSound();
                 sound = new WalkmanMovingSound(mc.player, sound3);
                 mc.getSoundHandler().playSound(sound);

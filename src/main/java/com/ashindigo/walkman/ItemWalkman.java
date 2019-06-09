@@ -2,7 +2,6 @@ package com.ashindigo.walkman;
 
 import com.ashindigo.walkman.networking.PacketPlayDisc;
 import com.ashindigo.walkman.networking.PacketStopDisc;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,7 +18,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.List;
 import java.util.Objects;
 
 public class ItemWalkman extends Item {
@@ -57,16 +55,5 @@ public class ItemWalkman extends Item {
             }
         }
         return new ActionResult<>(EnumActionResult.PASS, player.getHeldItem(hand));
-    }
-
-
-    @Override
-    public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flag) {
-        // TODO Doesn't actually work when the player is on a server
-//        String str = "Nothing";
-//        if (!Objects.requireNonNull(stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)).getStackInSlot(0).isEmpty()) {
-//            str = "Playing: " + ((ItemRecord) Objects.requireNonNull(stack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)).getStackInSlot(0).getItem()).getRecordNameLocal();
-//        }
-//        list.add(str);
     }
 }
