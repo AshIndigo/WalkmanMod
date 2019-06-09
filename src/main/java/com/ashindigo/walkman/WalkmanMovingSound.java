@@ -1,9 +1,7 @@
 package com.ashindigo.walkman;
 
 import net.minecraft.client.audio.MovingSound;
-import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
@@ -29,15 +27,9 @@ public class WalkmanMovingSound extends MovingSound {
             this.xPosF = (float) this.player.posX;
             this.yPosF = (float) this.player.posY;
             this.zPosF = (float) this.player.posZ;
-            float f = 1.0f; //MathHelper.sqrt(this.player.motionX * this.player.motionX + this.player.motionZ * this.player.motionZ);
-
-            if ((double) f >= 0.01D) {
-                this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
-                this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 0.5F) * 0.7F;
-            } else {
-                this.distance = 0.0F;
-                this.volume = 0.0F;
-            }
+            float f = 1.0f;
+            this.distance = MathHelper.clamp(this.distance + 0.0025F, 0.0F, 1.0F);
+            this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 0.5F) * 0.7F;
         }
     }
 }

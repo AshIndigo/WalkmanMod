@@ -1,11 +1,8 @@
 package com.ashindigo.walkman;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemRecord;
-
 public class CommonProxy {
 
-    public void playDisc(EntityPlayer player, ItemRecord item) {
+    public void playDisc(String sound2) {
         // NO-OP
     }
 

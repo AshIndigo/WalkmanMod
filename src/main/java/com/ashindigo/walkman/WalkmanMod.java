@@ -1,23 +1,21 @@
 package com.ashindigo.walkman;
 
+import com.ashindigo.walkman.networking.PacketPlayDisc;
+import com.ashindigo.walkman.networking.PacketStopDisc;
+import com.ashindigo.walkman.networking.PlayPacketHandler;
+import com.ashindigo.walkman.networking.StopPacketHandler;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
@@ -37,6 +35,7 @@ public class WalkmanMod {
 
     private static ItemWalkman walkman;
 
+    public static final SimpleNetworkWrapper HANDLER = new SimpleNetworkWrapper(MODID);
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event) {
         ModelLoader.setCustomModelResourceLocation(walkman, 0, new ModelResourceLocation(Objects.requireNonNull(walkman.getRegistryName()), "inventory"));
@@ -44,6 +43,8 @@ public class WalkmanMod {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        HANDLER.registerMessage(PlayPacketHandler.class, PacketPlayDisc.class, 0, Side.CLIENT);
+        HANDLER.registerMessage(StopPacketHandler.class, PacketStopDisc.class, 1, Side.CLIENT);
         walkman = new ItemWalkman();
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new WalkmanGuiHandler());
         MinecraftForge.EVENT_BUS.register(INSTANCE);

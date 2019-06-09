@@ -1,24 +1,19 @@
 package com.ashindigo.walkman;
 
-import net.minecraft.client.gui.inventory.GuiShulkerBox;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.*;
-import net.minecraft.item.ItemRecord;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.SlotItemHandler;
 
-import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 public class ContainerWalkman extends Container {
 
-    public ContainerWalkman(InventoryPlayer invPlayer, IItemHandler walkman) {
-        super();
+    ContainerWalkman(InventoryPlayer invPlayer, IItemHandlerModifiable walkman) {
         this.addSlotToContainer(new SlotItemHandler(walkman, 0, 80, 18));
 
         for (int i1 = 0; i1 < 3; ++i1) {
@@ -33,11 +28,13 @@ public class ContainerWalkman extends Container {
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public boolean canInteractWith(EntityPlayer playerIn) {
         return true;
     }
 
     @Override
+    @Nonnull
     public ItemStack transferStackInSlot(EntityPlayer player, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get(index);

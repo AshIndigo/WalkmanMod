@@ -9,11 +9,9 @@ import net.minecraft.util.ResourceLocation;
 public class GuiWalkman extends GuiContainer {
 
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(WalkmanMod.MODID, "textures/gui/container/walkman.png");
-    private final InventoryPlayer inventory;
 
-    public GuiWalkman(InventoryPlayer inventory, ContainerWalkman walkman) {
+    GuiWalkman(ContainerWalkman walkman) {
         super(walkman);
-        this.inventory = inventory;
     }
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -33,6 +31,6 @@ public class GuiWalkman extends GuiContainer {
 
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         this.fontRenderer.drawString(I18n.format("gui.walkman.main"), this.xSize / 2 - this.fontRenderer.getStringWidth(I18n.format("gui.walkman.main")) / 2, 6, 4210752);
-        this.fontRenderer.drawString(this.inventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
+        this.fontRenderer.drawString(I18n.format("container.inventory"), 8, this.ySize - 96 + 2, 4210752);
     }
 }
