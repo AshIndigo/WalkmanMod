@@ -35,7 +35,7 @@ public class WalkmanMod {
 
     private static ItemWalkman walkman;
 
-    public static final SimpleNetworkWrapper HANDLER = new SimpleNetworkWrapper(MODID);
+    static final SimpleNetworkWrapper HANDLER = new SimpleNetworkWrapper(MODID);
     @SubscribeEvent
     public static void registerModels(ModelRegistryEvent event) {
         ModelLoader.setCustomModelResourceLocation(walkman, 0, new ModelResourceLocation(Objects.requireNonNull(walkman.getRegistryName()), "inventory"));
