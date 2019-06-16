@@ -17,11 +17,8 @@ public class ClientProxy extends CommonProxy {
 
     public void playDisc(ItemStack stack) {
         Minecraft.getInstance().enqueue(() -> {
-            if (!isPlaying || !mc.getSoundHandler().func_215294_c(sound)) { // probably isSoundPlaying
+            if (!isPlaying || !mc.getSoundHandler().func_215294_c(sound)) {
                 mc.ingameGUI.setRecordPlayingMessage(((MusicDiscItem) stack.getItem()).getRecordDescription().getFormattedText());
-                //mc.field_71456_v.setRecordPlayingMessage(((MusicDiscItem) Objects.requireNonNull(Item.getByNameOrId(sound2))).getRecordNameLocal());
-                //SoundEvent sound3 = ((MusicDiscItem) Objects.requireNonNull(Item.getByNameOrId(sound2))).getSound();
-                //sound = new WalkmanMovingSound(mc.player, sound3);
                 sound = new WalkmanMovingSound(mc.player, ((MusicDiscItem) stack.getItem()).getSound());
                 mc.getSoundHandler().play(sound);
                 isPlaying = true;

@@ -11,6 +11,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.MusicDiscItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -18,8 +19,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -27,7 +28,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class ItemWalkman extends Item implements INamedContainerProvider {
 
@@ -60,18 +60,11 @@ public class ItemWalkman extends Item implements INamedContainerProvider {
         } else {
             if (!getHandler(player.getHeldItem(hand)).getStackInSlot(0).isEmpty()) {
                 if (!world.isRemote) {
-                    WalkmanMod.HANDLER.send(PacketDistributor.PLAYER.with((Supplier<ServerPlayerEntity>) player), new PacketPlayDisc(player.getHeldItem(hand)));
-                    //WalkmanMod.proxy.playDisc(getHandler(player.getHeldItem(hand)).getStackInSlot(0));
-                    //player.playSound();
-                    //WalkmanMod.HANDLER.sendTo(new PacketPlayDisc(Objects.requireNonNull(Objects.requireNonNull(player.getHeldItem(hand).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)).orElse(new ItemStackHandler(1)).getStackInSlot(0).getItem().getRegistryName()).toString()), (ServerPlayerEntity) player);
+                    WalkmanMod.HANDLER.sendTo(new PacketPlayDisc(getHandler(player.getHeldItem(hand)).getStackInSlot(0)), ((ServerPlayerEntity)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
                 }
             } else {
                 if (!world.isRemote) {
-                    WalkmanMod.HANDLER.send(PacketDistributor.PLAYER.with((Supplier<ServerPlayerEntity>) player), new PacketStopDisc());
-                    //WalkmanMod.proxy.stopDisc();
-                    //WalkmanMod.HANDLER.send(PacketDistributor.PacketTarget);
-                    //WalkmanMod.HANDLER.send
-                    //WalkmanMod.HANDLER.sendTo(new PacketStopDisc(), (ServerPlayerEntity) player);
+                    WalkmanMod.HANDLER.sendTo(new PacketStopDisc(), ((ServerPlayerEntity)player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
                 }
             }
         }
@@ -79,17 +72,21 @@ public class ItemWalkman extends Item implements INamedContainerProvider {
     }
 
     @Override
+    @Nonnull
     public ITextComponent getDisplayName() {
         return new TranslationTextComponent(this.getTranslationKey());
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(new StringTextComponent("Playing: ").appendSibling(new TranslationTextComponent(getHandler(stack).getStackInSlot(0).getTranslationKey())));
+        if (!getHandler(stack).getStackInSlot(0).isEmpty()) {
+            tooltip.add(new StringTextComponent("Playing: ").appendSibling(((MusicDiscItem) getHandler(stack).getStackInSlot(0).getItem()).getRecordDescription()));
+        }
     }
 
     @Nullable
     @Override
+    @ParametersAreNonnullByDefault
     public Container createMenu(int id, PlayerInventory inv, PlayerEntity player) {
         return new ContainerWalkman(id, inv);
     }
