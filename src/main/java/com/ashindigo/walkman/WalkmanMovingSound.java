@@ -13,7 +13,7 @@ public class WalkmanMovingSound extends MovingSound {
     WalkmanMovingSound(EntityPlayer player, SoundEvent event) {
         super(event, SoundCategory.RECORDS);
         this.player = player;
-        this.repeat = true;
+        this.repeat = false;
         this.repeatDelay = 0;
     }
 
