@@ -1,0 +1,25 @@
+modLoader="javafml"
+loaderVersion="[26,)"
+issueTrackerURL="https://github.com/AshIndigo/WalkmanMod/issues"
+[[mods]]
+modId="walkman"
+version="${file.jarVersion}"
+displayName="Walkman"
+displayURL="https://github.com/AshIndigo/WalkmanMod/"
+credits="Thanks to the Forge team for making Forge" #
+authors="AshIndigo"
+description='''
+Adds a portable disc player to Minecraft!
+'''
+[[dependencies.walkman]]
+    modId="forge" #mandator
+    mandatory=true
+    versionRange="[26,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.walkman]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"

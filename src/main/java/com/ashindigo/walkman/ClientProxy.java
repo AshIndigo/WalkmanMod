@@ -1,34 +1,35 @@
 package com.ashindigo.walkman;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemRecord;
-import net.minecraft.util.SoundEvent;
-
-import java.util.Objects;
+import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.MusicDiscItem;
 
 public class ClientProxy extends CommonProxy {
 
-    private static final Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getInstance();
     private static WalkmanMovingSound sound;
     private boolean isPlaying;
 
-    public void playDisc(String sound2) {
-        Minecraft.getMinecraft().addScheduledTask(() -> {
-            if (!isPlaying || !mc.getSoundHandler().isSoundPlaying(sound)) {
-                mc.ingameGUI.setRecordPlayingMessage(((ItemRecord) Objects.requireNonNull(Item.getByNameOrId(sound2))).getRecordNameLocal());
-                SoundEvent sound3 = ((ItemRecord) Objects.requireNonNull(Item.getByNameOrId(sound2))).getSound();
-                sound = new WalkmanMovingSound(mc.player, sound3);
-                mc.getSoundHandler().playSound(sound);
+    public void playDisc(ItemStack stack) {
+        Minecraft.getInstance().enqueue(() -> {
+            if (!isPlaying || !mc.getSoundHandler().isPlaying(sound)) {
+                mc.ingameGUI.setRecordPlayingMessage(((MusicDiscItem) stack.getItem()).getRecordDescription().getFormattedText());
+                sound = new WalkmanMovingSound(mc.player, ((MusicDiscItem) stack.getItem()).getSound());
+                mc.getSoundHandler().play(sound);
                 isPlaying = true;
             }
         });
     }
 
     public void stopDisc() {
-        Minecraft.getMinecraft().addScheduledTask(() -> {
-            mc.getSoundHandler().stopSound(sound);
+        Minecraft.getInstance().enqueue(() -> {
+            mc.getSoundHandler().stop(sound);
             isPlaying = false;
         });
+    }
+
+    public void registerGui() {
+        ScreenManager.registerFactory(WalkmanMod.walkmanType, GuiWalkman::new);
     }
 }

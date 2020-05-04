@@ -1,19 +1,26 @@
 package com.ashindigo.walkman.networking;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import com.ashindigo.walkman.WalkmanMod;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketStopDisc implements IMessage {
+import java.util.function.Supplier;
 
-    public PacketStopDisc() {
+public class PacketStopDisc {
 
+    public static PacketStopDisc readPacketData(PacketBuffer buf) {
+        return new PacketStopDisc();
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
+    public static void writePacketData(PacketStopDisc packet, PacketBuffer buf) {
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
+    public static class StopPacketHandler {
+
+        public static void handle(PacketStopDisc packet, Supplier<NetworkEvent.Context> ctx) {
+            WalkmanMod.proxy.stopDisc();
+        }
     }
 }
+
+

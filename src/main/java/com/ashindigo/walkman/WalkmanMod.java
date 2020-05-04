@@ -2,51 +2,53 @@ package com.ashindigo.walkman;
 
 import com.ashindigo.walkman.networking.PacketPlayDisc;
 import com.ashindigo.walkman.networking.PacketStopDisc;
-import com.ashindigo.walkman.networking.PlayPacketHandler;
-import com.ashindigo.walkman.networking.StopPacketHandler;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.registries.ObjectHolder;
 
-import java.util.Objects;
-
-@Mod.EventBusSubscriber(modid = WalkmanMod.MODID)
-@Mod(modid = WalkmanMod.MODID, name = WalkmanMod.NAME, version = WalkmanMod.VERSION)
+@Mod("walkman")
 public class WalkmanMod {
 
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+
     static final String MODID = "walkman";
-    static final String NAME = "Walkman";
-    static final String VERSION = "1.0";
 
-    @SidedProxy(modId = MODID, clientSide = "com.ashindigo.walkman.ClientProxy", serverSide = "com.ashindigo.walkman.CommonProxy")
-    public static CommonProxy proxy;
+    @ObjectHolder("walkman:walkman")
+    public static final ContainerType<ContainerWalkman> walkmanType = null;
 
-    @Mod.Instance
-    public static WalkmanMod INSTANCE;
+    static SimpleChannel HANDLER = NetworkRegistry.newSimpleChannel(new ResourceLocation(MODID, MODID), () -> "1", "1"::equals, "1"::equals);
 
-    private static ItemWalkman walkman;
-
-    static final SimpleNetworkWrapper HANDLER = new SimpleNetworkWrapper(MODID);
-    @SubscribeEvent
-    public static void registerModels(ModelRegistryEvent event) {
-        ModelLoader.setCustomModelResourceLocation(walkman, 0, new ModelResourceLocation(Objects.requireNonNull(walkman.getRegistryName()), "inventory"));
+    public WalkmanMod() {
+        int id = 0;
+        HANDLER.registerMessage(id++, PacketPlayDisc.class, PacketPlayDisc::writePacketData, PacketPlayDisc::readPacketData, PacketPlayDisc.PlayPacketHandler::handle);
+        HANDLER.registerMessage(id++, PacketStopDisc.class, PacketStopDisc::writePacketData, PacketStopDisc::readPacketData, PacketStopDisc.StopPacketHandler::handle);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(Item.class, WalkmanMod::registerItems);
+        FMLJavaModLoadingContext.get().getModEventBus().addGenericListener(ContainerType.class, WalkmanMod::registerContainers);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        HANDLER.registerMessage(PlayPacketHandler.class, PacketPlayDisc.class, 0, Side.CLIENT);
-        HANDLER.registerMessage(StopPacketHandler.class, PacketStopDisc.class, 1, Side.CLIENT);
-        walkman = new ItemWalkman();
-        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new WalkmanGuiHandler());
-        MinecraftForge.EVENT_BUS.register(INSTANCE);
+    @SubscribeEvent
+    public static void registerItems(RegistryEvent.Register<Item> event) {
+        event.getRegistry().register(new ItemWalkman());
+}
+
+    private void doClientStuff(final FMLClientSetupEvent event) {
+        proxy.registerGui();
+    }
+
+    @SubscribeEvent
+    public static void registerContainers(RegistryEvent.Register<ContainerType<?>> event) {
+        event.getRegistry().register(new ContainerType<>(ContainerWalkman::new).setRegistryName(new ResourceLocation(MODID, MODID)));
     }
 }

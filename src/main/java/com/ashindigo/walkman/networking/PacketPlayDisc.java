@@ -1,28 +1,34 @@
 package com.ashindigo.walkman.networking;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import com.ashindigo.walkman.WalkmanMod;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class PacketPlayDisc implements IMessage {
+import java.util.function.Supplier;
 
-    String soundName;
+public class PacketPlayDisc {
 
-    public PacketPlayDisc() {
+    ItemStack disc;
 
+    public PacketPlayDisc(ItemStack disc) {
+        this.disc = disc;
     }
 
-    public PacketPlayDisc(String soundName) {
-        this.soundName = soundName;
+    public static PacketPlayDisc readPacketData(PacketBuffer buf) {
+        return new PacketPlayDisc(buf.readItemStack());
     }
 
-    @Override
-    public void fromBytes(ByteBuf buf) {
-        soundName = ByteBufUtils.readUTF8String(buf);
+    public static void writePacketData(PacketPlayDisc packet, PacketBuffer buf) {
+        buf.writeItemStack(packet.disc);
     }
 
-    @Override
-    public void toBytes(ByteBuf buf) {
-        ByteBufUtils.writeUTF8String(buf, soundName);
+    public static class PlayPacketHandler {
+
+        public static void handle(PacketPlayDisc packet, Supplier<NetworkEvent.Context> ctx) {
+            WalkmanMod.proxy.playDisc(packet.disc);
+        }
     }
 }
+
+
